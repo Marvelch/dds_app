@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\KasMasuk;
+use App\Models\Supplier;
+use App\Models\Oppenent;
+use App\Models\Customer;
+use App\Models\TemporaryStorageKasMasuk;
 use Illuminate\Http\Request;
 use App\Models\Kasmsk;
 use Yajra\DataTables\DataTables;
+use Auth;
+use DB;
 
 class KasMasukController extends Controller
 {
@@ -140,47 +146,92 @@ class KasMasukController extends Controller
             $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $items;
         }
 
-        return view('kasmasuk.add', compact('uniqueCode'));
+        $oppenents = Oppenent::all();
+
+        return view('kasmasuk.add', compact('uniqueCode', 'oppenents'));
     }
 
 
     /**
-     * Call data for cash receipts table view
+     * Call data for table kasmsk
      *
      * @param  \App\Models\KasMasuk  $kasMasuk
      * @return \Illuminate\Http\Response
      */
     public function getCashIn(Request $request)
     {
-        // if ($request->ajax()) {
-        //     $data = Kasmsk::select('*');
-        //     return datatables()->of($data)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
+        return Datatables::of(Kasmsk::all())
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
 
-        //             $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='edit btn btn-primary btn-sm m-1'><span class='material-symbols-outlined' title='Ubah'>edit_note</span></a>";
-        //             $btn = $btn . "<a href='javascript:void(0)' class='edit btn btn-danger btn-sm m-1'><span class='material-symbols-outlined' title='Hapus'>delete_sweep</span></a>";
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='edit btn btn-primary btn-sm m-1'><span class='material-symbols-outlined' title='Ubah'>edit_note</span></a>";
+                $btn = $btn . "<a href='javascript:void(0)' class='edit btn btn-danger btn-sm m-1'><span class='material-symbols-outlined' title='Hapus'>delete_sweep</span></a>";
 
-        //             return $btn;
-        //         })
-        //         ->rawColumns(['action'])
-        //         ->make(true);
-        // }
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
 
-        // return $data;
+    public function getOpponent($id)
+    {
+        $oppenents = Oppenent::all();
 
-        // return datatables()->of(\DB::table('Kasmsk')
-        //     ->select('*'))
-        //     ->addColumn('action', function ($row) {
+        foreach ($oppenents as $item) {
+            if ($item->oppenent_name == $id) {
+                $items = DB::table($item->table_name)->select('nama', $item->table_name, 'id')->get();
+            }
+        }
 
-        //         $btn =  '<a href="javascript:void(0)" class="btn btn-primary btn-sm m-1">Edit</a>';
-        //         $btn = $btn . '<a href="javascript:void(0)" class="btn btn-danger btn-sm m-1">Delete</a>';
+        return response()->json($items);
+    }
 
-        //         return $btn;
-        //     })
-        //     ->rawColumns(['action'])
-        //     ->make(true);
+    /**
+     * Post data for table kasmsk
+     *
+     * @param  \App\Models\KasMasuk  $kasMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function postKasMasuk(Request $request)
+    {
+        try {
+            TemporaryStorageKasMasuk::create([
+                'id_users'      => Auth::user()->id,
+                'id_kasmsk'     => $request->push_opponent,
+                'no_ref'        => $request->no_ref,
+                'name_opponent' => $request->push_opponent_hidden,
+                // Perbedaan table name dan value dari select option 
+                'table_name'    => $request->opponent,
+                'currency'      => $request->currency,
+                'value'         => $request->value,
+                'description'   => $request->description,
+            ]);
 
-        return Datatables::of(Kasmsk::all())->make(true);
+            return redirect('/users/add_cash_in');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * Call data for table temporary_storage_kas_masuks
+     *
+     * @param  \App\Models\KasMasuk  $kasMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function getKasMasuk()
+    {
+
+        return Datatables::of(TemporaryStorageKasMasuk::all())
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-danger btn-sm'><span class='material-symbols-outlined' title='Hapus'>delete</span></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }

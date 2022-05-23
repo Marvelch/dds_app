@@ -1,4 +1,3 @@
-
 window._ = require('lodash');
 
 try {
@@ -31,8 +30,3 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
-
-// Register datatables.net assets in bootstrap.js
-require('bootstrap');
-require('datatables.net-bs4');
-require('datatables.net-buttons-bs4');

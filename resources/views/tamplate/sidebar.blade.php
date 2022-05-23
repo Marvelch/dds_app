@@ -40,7 +40,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Menu Transaksi :</h6>
-                <a class="collapse-item" href="#">Penerimaan Kas / Bank</a>
+                <a class="collapse-item" href="{{URL('users/cash_list')}}">Penerimaan Kas / Bank</a>
                 <a class="collapse-item" href="cards.html">Pengeluaran Kas/Bank</a>
                 <a class="collapse-item" href="cards.html">Koreksi Kas/Bank</a>
             </div>

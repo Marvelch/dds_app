@@ -4,13 +4,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item active small" aria-current="page"><a>Kas
-                        Penerimaan</a></li>
-            </ol>
-        </nav>
+    <div class="d-sm-flex align-items-center justify-content-end mb-4">
         <span class="d-flex justify-content-end">
             <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm m-2"><i
                     class="fas fa-download fa-sm text-white-50"></i> Generate Export</a>
@@ -63,6 +57,9 @@
                                     <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
                                         aria-label="Start date: activate to sort column ascending"
                                         style="width: 141px;">Start date</th>
+                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                        aria-label="Start date: activate to sort column ascending"
+                                        style="width: 141px;">Bantuan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,9 +76,7 @@
 </div>
 
 @push('scriptjs')
-{{-- Yajra Datatables --}}
-<link rel="stylesheet" href="//cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+{{-- kosong --}}
 @endpush
 
 <script>
@@ -104,7 +99,13 @@
                 },
                 {
                     data: 'ket',
-                }
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
             ]
         });
     });

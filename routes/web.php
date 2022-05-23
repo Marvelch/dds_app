@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Controllers\KasMasukController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,24 +25,22 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/tamplate', function () {
-    return view('dashboard');
-});
-
-Route::group(['prefix' => 'users', 'middleware' => 'web'], function () {
+Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
     // Route Group Kas Masuk
 
     Route::resource('cash_list', KasMasukController::class);
-    Route::get('add_cash_in', [KasMasukController::class, 'addNew']);
 
+    Route::get('add_cash_in', [KasMasukController::class, 'addNew']);
     Route::get('get_cash', [KasMasukController::class, 'getCashIn']);
 
-    Route::get('get_opponent', function () {
-        return view('kasmasuk.opponent');
-    });
+    Route::get('get_opponent/{id}', [KasMasukController::class, 'getOpponent']);
+    Route::post('submit_detail_opponent', [KasMasukController::class, 'postKasMasuk']);
+    Route::get('get_kas_masuk_opponent', [KasMasukController::class, 'getKasMasuk']);
 });
 
-Route::get('penggilan', function () {
-    return view('layouts.app');
+Route::group(['prefix' => 'operator', 'middleware' => 'is_level'], function () {
+    Route::get('testing', function () {
+        return view('operator.home');
+    })->name('testing');
 });
