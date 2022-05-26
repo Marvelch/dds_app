@@ -37,6 +37,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('get_opponent/{id}', [KasMasukController::class, 'getOpponent']);
     Route::post('submit_detail_opponent', [KasMasukController::class, 'postKasMasuk']);
     Route::get('get_kas_masuk_opponent', [KasMasukController::class, 'getKasMasuk']);
+
+    Route::post('post_cek_masuk', [KasMasukController::class, 'postCekMasuk']);
+    Route::get('get_cek_masuk', [KasMasukController::class, 'getCekMasuk']);
+
+    Route::post('post_all_oppenent', [KasMasukController::class, 'postAllRequest']);
 });
 
 Route::group(['prefix' => 'operator', 'middleware' => 'is_level'], function () {

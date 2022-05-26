@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_users')->nullable();
             $table->foreign('id_users')->references('id')->on('users');
-
-            $table->unsignedBigInteger('id_kasmsk')->nullable();
-            $table->foreign('id_kasmsk')->references('id')->on('kasmsk1');
+            // $table->unsignedBigInteger('id_kasmsk')->nullable();
+            // $table->foreign('id_kasmsk')->references('id')->on('kasmsk1');
+            $table->bigInteger('id_opponent');
             $table->string('table_name');
             $table->string('name_opponent');
             $table->string('no_ref');

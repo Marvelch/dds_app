@@ -6,7 +6,10 @@ use App\Models\KasMasuk;
 use App\Models\Supplier;
 use App\Models\Oppenent;
 use App\Models\Customer;
+use App\Models\Kasmsk1;
+use App\Models\Cekmsk;
 use App\Models\TemporaryStorageKasMasuk;
+use App\Models\TemporaryStorageCekMasuk;
 use Illuminate\Http\Request;
 use App\Models\Kasmsk;
 use Yajra\DataTables\DataTables;
@@ -48,7 +51,7 @@ class KasMasukController extends Controller
         // validate form submit 
 
         // Create Unique Code
-        $items = Kasmsk::all();
+        $items = Kasmsk::latest('id')->first();
 
         $yearsMonth = date('Y');
 
@@ -59,7 +62,6 @@ class KasMasukController extends Controller
             $kasmskUnique = "KM000001";
         } else {
             // get last record
-            $items = $items->last();
 
             $characters = substr($items->nobukti, -4) + 1;
             $path_characters = sprintf("%04d", $characters);
@@ -71,17 +73,22 @@ class KasMasukController extends Controller
             $kasmskUnique = "KM" . $path_kas;
         }
 
-        Kasmsk::create([
-            'tgl'       => $request->dateToday,
-            'kasmsk'    => $kasmskUnique,
-            'nobukti'   => $uniqueCode,
-            'subket'    => $request->accepted,
-            'ket'       => $request->description,
-            'lastusr'   => 0,
-            'status'    => 0,
-        ]);
+        try {
+            Kasmsk::create([
+                'tgl'       => $request->dateToday,
+                'kasmsk'    => $kasmskUnique,
+                'nobukti'   => $uniqueCode,
+                'subket'    => $request->accepted,
+                'ket'       => $request->description,
+                'lastusr'   => 0,
+                'status'    => 0,
+            ]);
 
-        return back();
+            return redirect()->back();
+        } catch (\Throwable $th) {
+
+            return $th->getMessage();
+        }
     }
 
     /**
@@ -133,14 +140,14 @@ class KasMasukController extends Controller
 
     public function addNew()
     {
-        $items = Kasmsk::all();
+        $items = Kasmsk::latest('id')->first();
 
         $yearsMonth = date('Y');
 
         if (!$items) {
             $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/0001";
         } else {
-            $items = $items->last();
+            // $items = $items->last();
             $items = substr($items->nobukti, -4) + 1;
             $items = sprintf("%04d", $items);
             $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $items;
@@ -164,8 +171,8 @@ class KasMasukController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
-                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='edit btn btn-primary btn-sm m-1'><span class='material-symbols-outlined' title='Ubah'>edit_note</span></a>";
-                $btn = $btn . "<a href='javascript:void(0)' class='edit btn btn-danger btn-sm m-1'><span class='material-symbols-outlined' title='Hapus'>delete_sweep</span></a>";
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-primary btn-sm'><span class='material-symbols-outlined' title='Ubah'>edit</span></a>";
+                $btn = $btn . "<a href='javascript:void(0)' class='btn btn-danger btn-sm ml-1'><span class='material-symbols-outlined' title='Hapus'>delete</span></a>";
 
                 return $btn;
             })
@@ -197,7 +204,7 @@ class KasMasukController extends Controller
         try {
             TemporaryStorageKasMasuk::create([
                 'id_users'      => Auth::user()->id,
-                'id_kasmsk'     => $request->push_opponent,
+                'id_opponent'   => $request->push_opponent,
                 'no_ref'        => $request->no_ref,
                 'name_opponent' => $request->push_opponent_hidden,
                 // Perbedaan table name dan value dari select option 
@@ -222,16 +229,159 @@ class KasMasukController extends Controller
      */
     public function getKasMasuk()
     {
-
         return Datatables::of(TemporaryStorageKasMasuk::all())
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
-                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-danger btn-sm'><span class='material-symbols-outlined' title='Hapus'>delete</span></a>";
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-danger btn-sm' title='Hapus'><i class='fas fa-trash-alt fa-sm text-white-20'></i></a>";
 
                 return $btn;
             })
             ->rawColumns(['action'])
             ->make(true);
+    }
+
+    /**
+     * Save data to temporary_storage_cek_masuks
+     *
+     * @param  \App\Models\TemporaryStorageCekMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function postCekMasuk(Request $request)
+    {
+        try {
+            TemporaryStorageCekMasuk::create([
+                'id_users'      => Auth::user()->id,
+                'cash_bank'     => $request->cash_bank,
+                'giro_number'   => $request->giro_number,
+                'liquid_date'   => $request->liquid_date,
+                'currency'      => $request->currency,
+                'value'         => $request->value,
+                'description'   => $request->description,
+            ]);
+
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * Get and push data to view  add
+     *
+     * @param  \App\Models\TemporaryStorageCekMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function getCekMasuk()
+    {
+        return Datatables::of(TemporaryStorageCekMasuk::all())
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-danger btn-sm' title='Hapus'><i class='fas fa-trash-alt fa-sm text-white-20'></i></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+
+    /**
+     * Get and push data to view  add
+     *
+     * @param  \App\Models\TemporaryStorageCekMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function postAllRequest(Request $request)
+    {
+
+        // Generate unique code 
+        $items = Kasmsk::latest('id')->first();
+
+        $yearsMonth = date('Y');
+
+        if (!$items) {
+            $numberEvidence = "KM/" . substr($yearsMonth, -2) . date('m') . "/0001";
+
+            // kasmsk unique code
+            $kasmskUnique = "KM000001";
+        } else {
+            // get last record
+
+            $characters = substr($items->nobukti, -4) + 1;
+            $path_characters = sprintf("%04d", $characters);
+            $numberEvidence = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $path_characters;
+
+            // kasmsk unique code
+            $item_kasMasuk = substr($items->kasmsk, -4) + 1;
+            $path_kas = sprintf("%06d", $item_kasMasuk);
+            $kasmskUnique = "KM" . $path_kas;
+        }
+
+        try {
+            // save data to table kasmsk
+            Kasmsk::create([
+                'kasmsk'        => $kasmskUnique,
+                'tgl'           => $request->dateToday,
+                'nobukti'       => $numberEvidence,
+                'status'        => 0,
+                'subket'        => $request->accepted,
+                'ket'           => $request->description,
+            ]);
+
+            $temporaryKasMasuk = TemporaryStorageKasMasuk::where('id_users', Auth::user()->id)->get();
+
+            foreach ($temporaryKasMasuk as $item) {
+                // save data to table kasmsk1 one by one item from temporary storage kas masuk
+                $oppenents = Oppenent::where('oppenent_name', $item->table_name)
+                    // ->select('table_name')
+                    ->get();
+
+                $itemTableOppenent = Db::table($oppenents[0]->table_name)
+                    ->where('id', $item->id_opponent)
+                    ->select($oppenents[0]->table_name, 'nama')
+                    ->get();
+
+                $itemPlace = $oppenents[0]->table_name;
+
+                Kasmsk1::create([
+                    'kasmsk'        => $kasmskUnique,
+                    'baris'         => '0',
+                    'gollawan'      => $oppenents[0]->oppenent_name,
+                    'lawan'         => $itemTableOppenent[0]->$itemPlace,
+                    'ref'           => '',
+                    'cur'           => $item->currency,
+                    'nil'           => $item->value,
+                    'ket'           => $item->description,
+                ]);
+            }
+
+            $temporaryCekMasuk = TemporaryStorageCekMasuk::where('id_users', Auth::user()->id)->get();
+
+            foreach ($temporaryCekMasuk as $key => $item) {
+                Cekmsk::create([
+                    'kasmsk'        => $kasmskUnique,
+                    'baris'         => 0,
+                    'kas'           => $temporaryCekMasuk[$key]->cash_bank,
+                    'giro'          => $temporaryCekMasuk[$key]->giro_number,
+                    'tglcair'       => $temporaryCekMasuk[$key]->liquid_date,
+                    'cur'           => $temporaryCekMasuk[$key]->currency,
+                    'nil'           => $temporaryCekMasuk[$key]->value,
+                    'ket'           => $temporaryCekMasuk[$key]->description,
+                ]);
+            }
+
+            TemporaryStorageKasMasuk::where('id_users', Auth::user()->id)->delete();
+            TemporaryStorageCekMasuk::where('id_users', Auth::user()->id)->delete();
+
+            return redirect('/users/add_cash_in');
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            return $th->getMessage();
+        }
     }
 }

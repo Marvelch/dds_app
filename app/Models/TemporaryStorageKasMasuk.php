@@ -16,8 +16,8 @@ class TemporaryStorageKasMasuk extends Model
         'id'
     ];
 
-    public function suppliers()
-    {
-        return $this->belongsTo(Supplier::class, 'id_kasmsk');
-    }
+    // public function suppliers()
+    // {
+    //     return $this->belongsTo(Supplier::class, 'id_kasmsk');
+    // }
 }

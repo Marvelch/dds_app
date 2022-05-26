@@ -15,6 +15,14 @@ return new class extends Migration
     {
         Schema::create('temporary_storage_cek_masuks', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_users');
+            $table->foreign('id_users')->references('id')->on('users');
+            $table->string('cash_bank');
+            $table->string('giro_number');
+            $table->date('liquid_date');
+            $table->string('currency');
+            $table->bigInteger('value');
+            $table->string('description');
             $table->timestamps();
         });
     }
