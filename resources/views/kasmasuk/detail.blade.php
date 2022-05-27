@@ -24,28 +24,32 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <div class="row small">
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-group">
-                                            <label for="">Tanggal</label>
-                                            <input type="date" name="dateToday" id="" class="form-control"
-                                                value="{{ date('Y-m-d', strtotime(" +0 day")) }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="">No Bukti</label>
-                                        <input type="text" id="" name="unique_code" class="form-control"
-                                            value="{{$uniqueCode}}" readonly>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <label for="">Terima Dari</label>
-                                        <input type="text" name="accepted" class="form-control">
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label for="">Keterangan</label>
-                                        <textarea name="description" id="" cols="30" rows="4"
-                                            class="form-control"></textarea>
-                                    </div>
+                                <div class="table table-responsive">
+                                    <table class="table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 10rem;">Kas Masuk</td>
+                                                <td>12.42.1202</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tanggal</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>No Bukti</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Penerima</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Keterangan</td>
+                                                <td></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -198,12 +202,6 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Pilih Lawan</label>
-                                    <select name="opponent" id="opponent" class="form-control">
-                                        @foreach ($oppenents as $item)
-                                        <option value="{{$item->oppenent_name}}" selected>{{$item->oppenent_name}}
-                                        </option>
-                                        @endforeach
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -371,80 +369,5 @@
 
 </script>
 @endpush
-
-<script>
-    // Datatables
-    document.addEventListener('DOMContentLoaded', function () {
-        $('#example').DataTable({
-            "searching": false,
-            "lengthChange": false,
-            paging: false,
-            ordering: false,
-            info: false,
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/users/get_kas_masuk_opponent/') }}",
-            columns: [{
-                    data: 'table_name',
-                },
-                {
-                    data: 'name_opponent',
-                },
-                {
-                    data: 'no_ref',
-                },
-                {
-                    data: 'currency',
-                },
-                {
-                    data: 'value',
-                },
-                {
-                    data: 'description',
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }
-            ]
-        });
-
-        $('#example_cekmasuk').DataTable({
-            "searching": false,
-            "lengthChange": false,
-            paging: false,
-            ordering: false,
-            info: false,
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/users/get_cek_masuk/') }}",
-            columns: [{
-                    data: 'cash_bank',
-                },
-                {
-                    data: 'liquid_date',
-                },
-                {
-                    data: 'currency',
-                },
-                {
-                    data: 'value',
-                },
-                {
-                    data: 'description',
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }
-            ]
-        });
-    });
-
-</script>
 
 @endsection

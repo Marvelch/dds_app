@@ -16,7 +16,7 @@
     <div class="row">
 
         <!-- Area Chart -->
-        <div class="col-xl-12 col-lg-7">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-end">
@@ -29,45 +29,52 @@
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                             aria-labelledby="dropdownMenuLink">
                             <div class="dropdown-header">Pengelolaan:</div>
-                            <a class="dropdown-item" href="{{URL('/users/add_cash_in')}}">Tambah</a>
+                            <a class="dropdown-item" href="{{URL('/users/add_cash_in')}}">Tambah Penerimaan</a>
                         </div>
                     </div>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
                     <div id="example_wrapper" class="dataTables_wrapper">
-                        <table id="example" class="display dataTable" style="width:100%"
-                            aria-describedby="example_info">
-                            <thead>
-                                <tr>
-                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="example" rowspan="1"
-                                        colspan="1" aria-sort="ascending"
-                                        aria-label="Name: activate to sort column descending" style="width: 94px;">Kas
-                                        Masuk
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                                        aria-label="Position: activate to sort column ascending"
-                                        style="width: 124.385px;">Tanggal</th>
-                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                                        aria-label="Office: activate to sort column ascending"
-                                        style="width: 96.7396px;">Office</th>
-                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                                        aria-label="Extn.: activate to sort column ascending" style="width: 87.0729px;">
-                                        Extn.</th>
-                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                                        aria-label="Start date: activate to sort column ascending"
-                                        style="width: 141px;">Start date</th>
-                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
-                                        aria-label="Start date: activate to sort column ascending"
-                                        style="width: 141px;">Bantuan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="odd">
-                                    <td valign="top" colspan="6" class="dataTables_empty">Loading...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table table-responsive">
+                            <table id="example" class="display dataTable" style="width: 100%;"
+                                aria-describedby="example_info">
+                                <thead>
+                                    <tr>
+                                        <th class="sorting sorting_asc" tabindex="0" aria-controls="example" rowspan="1"
+                                            colspan="1" aria-sort="ascending"
+                                            aria-label="Name: activate to sort column descending" style="width: auto;">
+                                            Kas
+                                            Masuk
+                                        </th>
+                                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                            aria-label="Position: activate to sort column ascending"
+                                            style="width: auto;">
+                                            Tanggal</th>
+                                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                            aria-label="Office: activate to sort column ascending" style="width: auto;">
+                                            No
+                                            Bukti</th>
+                                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                            aria-label="Extn.: activate to sort column ascending" style="width: auto;">
+                                            Terima Dari</th>
+                                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                            aria-label="Start date: activate to sort column ascending"
+                                            style="width: auto;">
+                                            Keterangan</th>
+                                        <th class="sorting" tabindex="0" aria-controls="example" rowspan="1" colspan="1"
+                                            aria-label="Start date: activate to sort column ascending"
+                                            style="width: auto;">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd">
+                                        <td valign="top" colspan="6" class="dataTables_empty">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,7 +113,13 @@
                     orderable: false,
                     searchable: false
                 },
-            ]
+            ],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Pencarian",
+                "zeroRecords": "Data Kosong !",
+                "info": "Tampilkan _PAGE_ dari _PAGES_"
+            }
         });
     });
 

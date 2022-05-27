@@ -30,18 +30,15 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     // Route Group Kas Masuk
 
     Route::resource('cash_list', KasMasukController::class);
-
     Route::get('add_cash_in', [KasMasukController::class, 'addNew']);
     Route::get('get_cash', [KasMasukController::class, 'getCashIn']);
-
     Route::get('get_opponent/{id}', [KasMasukController::class, 'getOpponent']);
     Route::post('submit_detail_opponent', [KasMasukController::class, 'postKasMasuk']);
     Route::get('get_kas_masuk_opponent', [KasMasukController::class, 'getKasMasuk']);
-
     Route::post('post_cek_masuk', [KasMasukController::class, 'postCekMasuk']);
     Route::get('get_cek_masuk', [KasMasukController::class, 'getCekMasuk']);
-
     Route::post('post_all_oppenent', [KasMasukController::class, 'postAllRequest']);
+    Route::get('/get_info/{id}/detail_oppenent', [KasMasukController::class, 'getDetail']);
 });
 
 Route::group(['prefix' => 'operator', 'middleware' => 'is_level'], function () {

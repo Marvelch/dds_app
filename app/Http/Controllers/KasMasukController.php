@@ -171,8 +171,9 @@ class KasMasukController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
-                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-primary btn-sm'><span class='material-symbols-outlined' title='Ubah'>edit</span></a>";
-                $btn = $btn . "<a href='javascript:void(0)' class='btn btn-danger btn-sm ml-1'><span class='material-symbols-outlined' title='Hapus'>delete</span></a>";
+                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a>";
+                $btn = $btn . "<a href='" . URL('/get_info/' . $row->kasmsk) . '/detail_oppenent' . "' class='btn btn-secondary btn-sm ml-1'><i class='fas fa-eye'></i></a>";
+                $btn = $btn . "<a href='javascript:void(0)' class='btn btn-danger btn-sm ml-1'><i class='fas fa-trash'></i></a>";
 
                 return $btn;
             })
@@ -383,5 +384,21 @@ class KasMasukController extends Controller
 
             return $th->getMessage();
         }
+    }
+
+    /**
+     * Push data from kasmasukcontroller to view.blade.php
+     *
+     * @param  \App\Models\Kasmsk
+     * @parm    \App\Models\Kasmsk1
+     * @param   \App\Models\Cekmsk
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getDetail($id)
+    {
+        $kasmsk = Kasmsk::find($id);
+
+        return view('kasmasuk.detail', compact('kasmsk'));
     }
 }
