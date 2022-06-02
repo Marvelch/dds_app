@@ -81,9 +81,62 @@
         </div>
     </div>
 </div>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Penghapusan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <title>Konfirmasi Penghapusan</title>
+                <br>
+                <p>Konfirmasi penghapusan data secara permanen oleh pengguna. Data terhapus tidak bisa dikembalikan lagi
+                    !</p>
+                <input type="hidden" name="" id="temprorery_delete">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <a class="btn btn-primary" onclick="delMasmsk()">Konfirmasi</a>
+            </div>
+        </div>
+    </div>
+</div>
 @push('scriptjs')
-{{-- kosong --}}
+<script>
+    $(document).on('click', '.delete', function () {
+        let id = $(this).attr('data-id');
+
+        $('#temprorery_delete').val(id);
+    });
+
+    function delMasmsk() {
+        let temp_id = $('#temprorery_delete').val();
+
+        $.ajax({
+            url: '/users/cash_in/delete/' + temp_id,
+            type: 'DELETE',
+            data: {
+                "id" : temp_id,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function (e) {
+                // console.log(e);
+                if (e.redirect_url) {
+                    window.location = e.redirect_url; 
+                }
+            },
+            error: function(n) {
+                console.log(n);
+            }
+        });
+    }
+
+</script>
 @endpush
 
 <script>

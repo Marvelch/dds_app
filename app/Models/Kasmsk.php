@@ -12,6 +12,6 @@ class Kasmsk extends Model
     protected $table = 'kasmsk';
 
     protected $guarded = [
-        'id',
+        'created_at',
     ];
 }

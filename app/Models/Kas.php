@@ -5,13 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cekmsk extends Model
+class Kas extends Model
 {
     use HasFactory;
 
-    protected $table = 'Cekmsks';
-
-    protected $guarded = [
-        'id',
-    ];
+    protected $table = 'kas';
 }

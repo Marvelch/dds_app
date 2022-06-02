@@ -39,12 +39,13 @@
                                     </div>
                                     <div class="col-md-12 mb-3">
                                         <label for="">Terima Dari</label>
-                                        <input type="text" name="accepted" class="form-control">
+                                        <input type="text" name="accepted" class="form-control"
+                                            value="{{old('accepted')}}">
                                     </div>
                                     <div class="col-md-12">
                                         <label for="">Keterangan</label>
-                                        <textarea name="description" id="" cols="30" rows="4"
-                                            class="form-control"></textarea>
+                                        <textarea name="description" id="" cols="30" rows="4" class="form-control"
+                                            value="{{old('description')}}"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +56,6 @@
         </div>
 
         <!-- Content Row -->
-
         <div class="row">
 
             <!-- Area Chart -->
@@ -174,7 +174,7 @@
 
             <div class="col-md-12">
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-danger btn-sm m-1">Batal</button>
+                    <a class="btn btn-danger btn-sm m-1" href="{{URL('/users/cash_list')}}">Batal</a>
                     <button type="submit" class="btn btn-primary btn-sm m-1">Simpan</button>
                 </div>
             </div>
@@ -274,8 +274,9 @@
                                 <div class="form-group">
                                     <label for="">Kas / Bank</label>
                                     <select name="cash_bank" class="form-control" value="{{old('cash_bank')}}">
-                                        <option value="BCA">BCA</option>
-                                        <option value="BRI">BRI</option>
+                                        @foreach ($cash as $item)
+                                        <option value="{{$item->kas}}">{{$item->kas}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>

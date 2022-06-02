@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kas;
+use App\Helper\Helper;
 use App\Models\KasMasuk;
 use App\Models\Supplier;
 use App\Models\Oppenent;
 use App\Models\Customer;
 use App\Models\Kasmsk1;
 use App\Models\Cekmsk;
+use App\Models\TemporaryEditKasMasuk;
 use App\Models\TemporaryStorageKasMasuk;
 use App\Models\TemporaryStorageCekMasuk;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Models\Kasmsk;
+use App\Models\TemporaryEditCekMasuk;
 use Yajra\DataTables\DataTables;
 use Auth;
 use DB;
@@ -48,30 +53,9 @@ class KasMasukController extends Controller
      */
     public function store(Request $request)
     {
-        // validate form submit 
+        $kasmskUnique = Helper::generateKasMsk();
 
-        // Create Unique Code
-        $items = Kasmsk::latest('id')->first();
-
-        $yearsMonth = date('Y');
-
-        if (!$items) {
-            $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/0001";
-
-            // kasmsk unique code
-            $kasmskUnique = "KM000001";
-        } else {
-            // get last record
-
-            $characters = substr($items->nobukti, -4) + 1;
-            $path_characters = sprintf("%04d", $characters);
-            $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $path_characters;
-
-            // kasmsk unique code
-            $item_kasMasuk = substr($items->kasmsk, -4) + 1;
-            $path_kas = sprintf("%06d", $item_kasMasuk);
-            $kasmskUnique = "KM" . $path_kas;
-        }
+        $uniqueCode = Helper::generateId();
 
         try {
             Kasmsk::create([
@@ -99,9 +83,13 @@ class KasMasukController extends Controller
      */
     public function show($id)
     {
-        $items = Kasmsk::where('kasmsk', $id)->first();
+        $descryptID = Crypt::decryptString($id);
 
-        return view('kasmasuk.edit', compact('items'));
+        $kasmskTable = Kasmsk::where('kasmsk', $descryptID)->first();
+
+        $oppenents = Oppenent::all();
+
+        return view('kasmasuk.edit', compact('kasmskTable', 'oppenents'));
     }
 
     /**
@@ -138,24 +126,15 @@ class KasMasukController extends Controller
         //
     }
 
-    public function addNew()
+    public function addCashIn()
     {
-        $items = Kasmsk::latest('id')->first();
-
-        $yearsMonth = date('Y');
-
-        if (!$items) {
-            $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/0001";
-        } else {
-            // $items = $items->last();
-            $items = substr($items->nobukti, -4) + 1;
-            $items = sprintf("%04d", $items);
-            $uniqueCode = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $items;
-        }
+        $uniqueCode = Helper::generateId();
 
         $oppenents = Oppenent::all();
 
-        return view('kasmasuk.add', compact('uniqueCode', 'oppenents'));
+        $cash = Kas::all();
+
+        return view('kasmasuk.add', compact('uniqueCode', 'oppenents', 'cash'));
     }
 
 
@@ -170,10 +149,9 @@ class KasMasukController extends Controller
         return Datatables::of(Kasmsk::all())
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
-
-                $btn = "<a href='" . URL('users/cash_list/' . $row->kasmsk) . "' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a>";
-                $btn = $btn . "<a href='" . URL('/get_info/' . $row->kasmsk) . '/detail_oppenent' . "' class='btn btn-secondary btn-sm ml-1'><i class='fas fa-eye'></i></a>";
-                $btn = $btn . "<a href='javascript:void(0)' class='btn btn-danger btn-sm ml-1'><i class='fas fa-trash'></i></a>";
+                $btn = "<a href='" . URL('users/cash_list/' . Crypt::encryptString($row->kasmsk)) . "' class='btn btn-primary btn-sm'><i class='fas fa-edit'></i></a>";
+                $btn = $btn . "<a href='" . URL('/users/info/cash_in/' . Crypt::encryptString($row->kasmsk)) . "' class='btn btn-secondary btn-sm ml-1'><i class='fas fa-eye'></i></a>";
+                $btn = $btn . "<a class='delete btn btn-danger btn-sm ml-1' name='" . $row->kasmsk . "' data-id='" . $row->kasmsk . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
 
                 return $btn;
             })
@@ -394,11 +372,222 @@ class KasMasukController extends Controller
      * @param   \App\Models\Cekmsk
      * @return \Illuminate\Http\Response
      */
-
-    public function getDetail($id)
+    public function getDetail(Request $request, $id)
     {
-        $kasmsk = Kasmsk::find($id);
+        $kasmskID = Crypt::decryptString($id);
 
-        return view('kasmasuk.detail', compact('kasmsk'));
+        $kasMsk = Kasmsk::where('kasmsk', $kasmskID)->get();
+
+        return view('kasmasuk.detail', compact('kasMsk'));
+    }
+
+    public function getFirstDetail($id)
+    {
+        $kasmskID = Crypt::decryptString($id);
+
+        return Datatables::of(Kasmsk1::where('kasmsk', $kasmskID))
+            ->make(true);
+    }
+
+    public function getSecondDetail($id)
+    {
+        $kasmskID = Crypt::decryptString($id);
+
+        return Datatables::of(Cekmsk::where('kasmsk', $kasmskID))
+            ->make(true);
+    }
+
+    /**
+     * Delete kasmsk with id
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteKasMsk($id)
+    {
+        try {
+            Kasmsk::where('kasmsk', $id)->delete();
+            Kasmsk1::where('kasmsk', $id)->delete();
+            Cekmsk::where('kasmsk', $id)->delete();
+
+            return response()->json(['status' => true, "redirect_url" => url('/users/cash_list')]);
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * Push data to view edit (detail)
+     *
+     * @param  \App\Models\Kasmsk1
+     * @return \Illuminate\Http\Response
+     */
+    public function getEditFirstDetail($id)
+    {
+        $kasmskID = Crypt::decryptString($id);
+
+        return Datatables::of(Kasmsk1::where('kasmsk', $kasmskID))
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = "<a class='delete_first btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * Push data to view edit (detail)
+     *
+     * @param  \App\Models\Cekmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function getEditSecondDetail($id)
+    {
+        $kasmskID = Crypt::decryptString($id);
+
+        return Datatables::of(Cekmsk::where('kasmsk', $kasmskID))
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = "<a class='delete btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * delete field from table kasmsk1 from page edit cash in
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function delKasMsk1(Request $request, $id)
+    {
+        try {
+            Kasmsk1::where('id', $id)->delete();
+
+            return response()->json(['status' => true, "redirect_url" => url('/users/cash_list/' . $request->urlPath)]);
+        } catch (\Throwable $th) {
+            //throw $th;
+
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * delete field from table kasmsk1 from page edit cash in
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function push_temp_kasmsk_edit(Request $request)
+    {
+        try {
+            TemporaryEditKasMasuk::create([
+                'id_users'      => Auth::user()->id,
+                'id_opponent'   => $request->push_opponent,
+                'no_ref'        => $request->no_ref,
+                'name_opponent' => $request->push_opponent_hidden,
+                // Perbedaan table name dan value dari select option 
+                'table_name'    => $request->opponent,
+                'currency'      => $request->currency,
+                'value'         => $request->value,
+                'description'   => $request->description,
+            ]);
+
+            return redirect('/users/cash_list/');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * get data from temp table edit kas masuk
+     *
+     * @param  \App\Models\TemporaryEditKasMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function get_temp_edit_kasmsk()
+    {
+        return Datatables::of(TemporaryEditKasMasuk::where('id_users', Auth::user()->id))
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = "<a class='delete btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * get data from temp table edit cek masuk
+     *
+     * @param  \App\Models\TemporaryEditKasMasuk
+     * @return \Illuminate\Http\Response
+     */
+    public function get_temp_edit_cekmsk()
+    {
+        return Datatables::of(TemporaryEditCekMasuk::where('id_users', Auth::user()->id))
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = "<a class='delete btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * push to temp edit cekmsk from edit view
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function push_temp_cekmsk_edit(Request $request)
+    {
+        try {
+            TemporaryEditCekMasuk::create([
+                'id_users'      => Auth::user()->id,
+                'cash_bank'     => $request->cash_bank,
+                'giro_number'   => $request->giro_number,
+                'liquid_date'   => $request->liquid_date,
+                'currency'      => $request->currency,
+                'value'         => $request->value,
+                'description'   => $request->description,
+            ]);
+
+            return redirect('/users/cash_list/');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
+    }
+
+    /**
+     * general save function for save all edit page
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function general_edit_cash_in(Request $request, $id, $kasmsk)
+    {
+        try {
+            Kasmsk::where('id', $id)->update([
+                ''
+            ]);
+
+            // return redirect('/users/cash_list/');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
     }
 }

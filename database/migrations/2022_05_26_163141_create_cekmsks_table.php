@@ -15,7 +15,16 @@ return new class extends Migration
     {
         Schema::create('cekmsks', function (Blueprint $table) {
             $table->id();
+            $table->string('kasmsk');
+            $table->string('baris');
+            $table->string('kas');
+            $table->string('giro');
+            $table->string('tglcair');
+            $table->string('cur');
+            $table->float('nil');
+            $table->string('ket');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

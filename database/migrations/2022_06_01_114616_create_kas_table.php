@@ -13,18 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kasmsk1s', function (Blueprint $table) {
+        Schema::create('kas', function (Blueprint $table) {
             $table->id();
-            $table->string('kasmsk');
-            $table->string('baris');
-            $table->string('gollawan');
-            $table->string('lawan');
-            $table->string('ref');
+            $table->string('kas');
+            $table->string('nama');
+            $table->string('golongan');
             $table->string('cur');
-            $table->float('nil');
             $table->string('ket');
+            $table->integer('lastusr');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -35,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kasmsk1s');
+        Schema::dropIfExists('kas');
     }
 };

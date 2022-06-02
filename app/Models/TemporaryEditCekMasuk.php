@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cekmsk extends Model
+class TemporaryEditCekMasuk extends Model
 {
     use HasFactory;
 
-    protected $table = 'Cekmsks';
+    protected $table = 'temporary_edit_cek_masuks';
 
     protected $guarded = [
-        'id',
+        'id'
     ];
 }
