@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_users');
             $table->foreign('id_users')->references('id')->on('users');
+            $table->string('kasmsk');
             $table->string('cash_bank');
             $table->string('giro_number');
             $table->date('liquid_date');

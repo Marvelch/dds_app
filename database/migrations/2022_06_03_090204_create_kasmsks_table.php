@@ -13,18 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kasmsk1s', function (Blueprint $table) {
+        Schema::create('kasmsks', function (Blueprint $table) {
             $table->id();
             $table->string('kasmsk');
-            $table->string('baris');
-            $table->string('gollawan');
-            $table->string('lawan');
-            $table->string('ref');
-            $table->string('cur');
-            $table->float('nil', 10, 2);
+            $table->date('tgl');
+            $table->string('nobukti');
+            $table->string('subket');
             $table->string('ket');
+            $table->integer('status');
+            $table->integer('lastusr')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -35,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kasmsk1s');
+        Schema::dropIfExists('kasmsks');
     }
 };

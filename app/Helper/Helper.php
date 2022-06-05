@@ -35,5 +35,7 @@ class Helper
             $path_kas = sprintf("%06d", $item_kasMasuk);
             $kasmskUnique = "KM" . $path_kas;
         }
+
+        return $kasmskUnique;
     }
 }

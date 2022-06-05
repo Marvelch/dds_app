@@ -188,8 +188,7 @@
             <div class="col-md-12">
                 <div class="d-flex justify-content-end">
                     <a href="{{URL('/users/cash_list')}}"
-                        class="btn btn-danger btn-sm shadow-sm col-md-1 text-white-30"><i
-                            class="fas fa-arrow-left text-white-50 mr-1"></i> Kembali</a>
+                        class="btn btn-danger btn-sm shadow-sm col-md-1 text-white-30">Kembali</a>
                 </div>
             </div>
         </div>

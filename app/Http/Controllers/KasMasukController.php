@@ -276,29 +276,8 @@ class KasMasukController extends Controller
      */
     public function postAllRequest(Request $request)
     {
-
-        // Generate unique code 
-        $items = Kasmsk::latest('id')->first();
-
-        $yearsMonth = date('Y');
-
-        if (!$items) {
-            $numberEvidence = "KM/" . substr($yearsMonth, -2) . date('m') . "/0001";
-
-            // kasmsk unique code
-            $kasmskUnique = "KM000001";
-        } else {
-            // get last record
-
-            $characters = substr($items->nobukti, -4) + 1;
-            $path_characters = sprintf("%04d", $characters);
-            $numberEvidence = "KM/" . substr($yearsMonth, -2) . date('m') . "/" . $path_characters;
-
-            // kasmsk unique code
-            $item_kasMasuk = substr($items->kasmsk, -4) + 1;
-            $path_kas = sprintf("%06d", $item_kasMasuk);
-            $kasmskUnique = "KM" . $path_kas;
-        }
+        $kasmskUnique = Helper::generateKasMsk();
+        $numberEvidence = Helper::generateId();
 
         try {
             // save data to table kasmsk
@@ -331,7 +310,7 @@ class KasMasukController extends Controller
                     'baris'         => '0',
                     'gollawan'      => $oppenents[0]->oppenent_name,
                     'lawan'         => $itemTableOppenent[0]->$itemPlace,
-                    'ref'           => '',
+                    'ref'           => $item->no_ref,
                     'cur'           => $item->currency,
                     'nil'           => $item->value,
                     'ket'           => $item->description,
@@ -485,11 +464,14 @@ class KasMasukController extends Controller
      * @param  \App\Models\Kasmsk
      * @return \Illuminate\Http\Response
      */
-    public function push_temp_kasmsk_edit(Request $request)
+    public function push_temp_kasmsk_edit(Request $request, $id)
     {
+        $kasmskID = Crypt::decryptString($id);
+
         try {
             TemporaryEditKasMasuk::create([
                 'id_users'      => Auth::user()->id,
+                'kasmsk'        => $kasmskID,
                 'id_opponent'   => $request->push_opponent,
                 'no_ref'        => $request->no_ref,
                 'name_opponent' => $request->push_opponent_hidden,
@@ -551,11 +533,14 @@ class KasMasukController extends Controller
      * @param  \App\Models\Kasmsk
      * @return \Illuminate\Http\Response
      */
-    public function push_temp_cekmsk_edit(Request $request)
+    public function push_temp_cekmsk_edit(Request $request, $id)
     {
+        $kasmskID = Crypt::decryptString($id);
+
         try {
             TemporaryEditCekMasuk::create([
                 'id_users'      => Auth::user()->id,
+                'kasmsk'        => $kasmskID,
                 'cash_bank'     => $request->cash_bank,
                 'giro_number'   => $request->giro_number,
                 'liquid_date'   => $request->liquid_date,
@@ -581,13 +566,71 @@ class KasMasukController extends Controller
     {
         try {
             Kasmsk::where('id', $id)->update([
-                ''
+                'tgl'       => $request->dateToday,
+                'subket'    => $request->accepted,
+                'ket'       => $request->description,
+                'status'    => '0',
             ]);
 
-            // return redirect('/users/cash_list/');
+            $tempEditKasMsk = TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->get();
+
+            foreach ($tempEditKasMsk as $key => $item) {
+
+                $oppenents = Oppenent::where('oppenent_name', $item->table_name)
+                    ->get();
+
+                $itemTableOppenent = Db::table($oppenents[0]->table_name)
+                    ->where('id', $item->id_opponent)
+                    ->select($oppenents[0]->table_name, 'nama')
+                    ->get();
+
+                $itemPlace = $oppenents[0]->table_name;
+
+                Kasmsk1::create([
+                    'kasmsk'    => $kasmsk,
+                    'baris'     => '0',
+                    'gollawan'  => $oppenents[0]->oppenent_name,
+                    'lawan'     => $itemTableOppenent[0]->$itemPlace,
+                    'ref'       => $item->no_ref,
+                    'cur'       => $item->currency,
+                    'nil'       => $item->value,
+                    'ket'       => $item->description,
+                ]);
+            }
+
+            $tempEditCekMsk = TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->get();
+
+            foreach ($tempEditCekMsk as $key => $item) {
+                Cekmsk::create([
+                    'kasmsk'        => $kasmsk,
+                    'baris'         => 0,
+                    'kas'           => $item->cash_bank,
+                    'giro'          => $item->giro_number,
+                    'tglcair'       => $item->liquid_date,
+                    'cur'           => $item->currency,
+                    'nil'           => $item->value,
+                    'ket'           => $item->description,
+                ]);
+            }
+
+            // Delete from temp kasmsk edit 
+            TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->delete();
+            TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->delete();
+
+            return redirect('/users/cash_list/');
         } catch (\Throwable $th) {
             //throw $th;
             return $th->getMessage();
         }
+    }
+
+    /**
+     * general cancel all transaction edit page
+     *
+     * @param  \App\Models\Kasmsk
+     * @return \Illuminate\Http\Response
+     */
+    public function general_cancel($id)
+    {
     }
 }

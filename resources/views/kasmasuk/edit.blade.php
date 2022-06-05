@@ -284,7 +284,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{URL('users/submit_detail_opponent/edit/')}}" method="post">
+                    <form action="{{URL('users/submit_detail_opponent/edit/'.$kasmskTable->kasmsk)}}" method="post">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
@@ -359,7 +359,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{URL('users/submit/edit/cek_masuk/')}}" method="post">
+                    <form action="{{URL('users/submit/edit/cek_masuk/'.$kasmskTable->kasmsk)}}" method="post">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
@@ -519,7 +519,7 @@
                     data: 'cur'
                 },
                 {
-                    data: 'nil'
+                    data: 'nil', render: $.fn.dataTable.render.number( ',', '.', 2, ) 
                 },
                 {
                     data: 'ket'

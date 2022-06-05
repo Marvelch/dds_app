@@ -48,10 +48,10 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/info/cash_in/edit/first/{id}', [KasMasukController::class, 'getEditFirstDetail']);
     Route::get('/info/cash_in/edit/second/{id}', [KasMasukController::class, 'getEditSecondDetail']);
     Route::delete('cash_in/first/delete/{id}', [KasMasukController::class, 'delKasMsk1']);
-    Route::post('/submit_detail_opponent/edit/', [KasMasukController::class, 'push_temp_kasmsk_edit']);
+    Route::post('/submit_detail_opponent/edit/{id}', [KasMasukController::class, 'push_temp_kasmsk_edit']);
     Route::get('/edit/get_temp_edit_kasmsk/', [KasMasukController::class, 'get_temp_edit_kasmsk']);
     Route::get('/edit/get_temp_edit_cekmsk/', [KasMasukController::class, 'get_temp_edit_cekmsk']);
-    Route::post('/submit/edit/cek_masuk/', [KasMasukController::class, 'push_temp_cekmsk_edit']);
+    Route::post('/submit/edit/cek_masuk/{id}', [KasMasukController::class, 'push_temp_cekmsk_edit']);
     Route::put('/general_edit_cash_in/{id}/{kasmsk}', [KasMasukController::class, 'general_edit_cash_in']);
 });
 
