@@ -12,7 +12,11 @@
                     class="fas fa-download fa-sm text-white-50"></i> Print</a>
         </span>
     </div>
-
+    @if (session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+    @endif
     <form action="{{URL('/users/post_all_oppenent')}}" method="post">
         @csrf
 
@@ -30,6 +34,9 @@
                                             <label for="">Tanggal</label>
                                             <input type="date" name="dateToday" id="" class="form-control"
                                                 value="{{ date('Y-m-d', strtotime(" +0 day")) }}">
+                                            @error('dateToday')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -41,11 +48,17 @@
                                         <label for="">Terima Dari</label>
                                         <input type="text" name="accepted" class="form-control"
                                             value="{{old('accepted')}}">
+                                        @error('accepted')
+                                        <p class="text-danger">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     <div class="col-md-12">
                                         <label for="">Keterangan</label>
                                         <textarea name="description" id="" cols="30" rows="4" class="form-control"
                                             value="{{old('description')}}"></textarea>
+                                        @error('description')
+                                        <p class="text-danger">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -57,13 +70,10 @@
 
         <!-- Content Row -->
         <div class="row">
-
-            <!-- Area Chart -->
             <div class="col-md-12">
                 <div class="card shadow mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-end">
-                        {{-- <h6 class="m-0 font-weight-bold text-primary">Title 1</h6> --}}
                         <a class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bd-add-modal-lg"><i
                                 class="fas fa-plus fa-sm text-white-50"></i>
                             Tambah</a>
@@ -181,7 +191,7 @@
         </div>
     </form>
 
-    {{-- Modal --}}
+    {{-- Modal Detail 1 --}}
     <div class="modal fade bd-add-modal-lg small" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -215,15 +225,13 @@
                                     <input type="hidden" name="push_opponent_hidden" id="push_opponent_hidden">
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">No Ref</label>
                                     <input name="no_ref" type="text" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Pilih Currency</label>
                                     <select name="currency" id="" class="form-control">
@@ -233,7 +241,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Nilai</label>
                                     <input name="value" type="text" class="form-control">
@@ -256,7 +264,7 @@
         </div>
     </div>
 
-    {{-- Modal Title 2--}}
+    {{-- Modal Detail 2--}}
     <div class="modal fade bd-add2-modal-lg small" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -287,7 +295,7 @@
                                         value="{{old('giro_number')}}">
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Tanggal Pencairan</label>
                                     <input type="date" name="liquid_date" id="" class="form-control"
@@ -295,9 +303,7 @@
                                         value="{{old('liquid_date')}}">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Pilih Currency</label>
                                     <select name="currency" id="" class="form-control" value="{{old('currency')}}">
@@ -307,7 +313,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Nilai</label>
                                     <input name="value" type="text" class="form-control" value="{{old('value')}}">

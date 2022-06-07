@@ -49,8 +49,13 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (auth()->user()->level == 'operator') {
-                return redirect()->route('testing');
+            if (auth()->user()->level == '1') {
+                // return redirect()->route('');
+                return "Home Admin";
+            } else if (auth()->user()->level == '2') {
+                return "Kasir";
+            } else if (auth()->user()->level == '3') {
+                return "Keuangan";
             } else {
                 return redirect()->route('home');
             }

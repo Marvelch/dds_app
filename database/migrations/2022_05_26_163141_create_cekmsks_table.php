@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('giro');
             $table->string('tglcair');
             $table->string('cur');
-            $table->float('nil');
+            $table->float('nil', 30, 2);
             $table->string('ket');
             $table->timestamps();
             $table->softDeletes();

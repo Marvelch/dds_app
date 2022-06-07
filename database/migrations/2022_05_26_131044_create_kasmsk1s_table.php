@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('lawan');
             $table->string('ref');
             $table->string('cur');
-            $table->float('nil', 10, 2);
+            $table->float('nil', 30, 2);
             $table->string('ket');
             $table->timestamps();
             $table->softDeletes();

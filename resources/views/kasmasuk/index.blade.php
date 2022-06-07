@@ -29,7 +29,16 @@
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                             aria-labelledby="dropdownMenuLink">
                             <div class="dropdown-header">Pengelolaan:</div>
+                            @if (Auth::user()->level == '1' || Auth::user()->level == '2' || Auth::user()->level == '3')
                             <a class="dropdown-item" href="{{URL('/users/add_cash_in')}}">Tambah Penerimaan</a>
+                            @elseif(Auth::user()->level == '1' || Auth::user()->level == '2')
+
+                            @elseif(Auth::user()->level == '1')
+
+                            @else
+
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -164,7 +173,7 @@
                     data: 'action',
                     name: 'action',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
                 },
             ],
             language: {

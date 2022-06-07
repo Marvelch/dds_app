@@ -60,18 +60,17 @@
         <div class="row">
 
             <div class="col-md-12">
-                <div class="card shadow mb-4">
+                <div class="card mb-4">
                     <!-- Card Header - Dropdown -->
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-end">
                         {{-- <h6 class="m-0 font-weight-bold text-primary">Title 1</h6> --}}
-                        <a class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bd-add-modal-lg"><i
-                                class="fas fa-plus fa-sm text-white-50"></i>
+                        <a class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bd-add-modal-lg">
                             Tambah</a>
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
                         <div id="example_wrapper" class="dataTables_wrapper">
-                            <div class="shadow pb-4">
+                            <div class="pb-4">
                                 <table id="example" class="display dataTable" style="width:100%"
                                     aria-describedby="example_info">
                                     <thead>
@@ -273,7 +272,7 @@
         </div>
     </form>
 
-    {{-- Modal --}}
+    {{-- Modal Detail 1 --}}
     <div class="modal fade bd-add-modal-lg small" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -284,7 +283,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{URL('users/submit_detail_opponent/edit/'.$kasmskTable->kasmsk)}}" method="post">
+                    <form
+                        action="{{URL('users/cash-in/edit/detail-1/submit/'.Crypt::encryptString($kasmskTable->kasmsk))}}"
+                        method="post">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
@@ -307,15 +308,13 @@
                                     <input type="hidden" name="push_opponent_hidden" id="push_opponent_hidden">
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">No Ref</label>
                                     <input name="no_ref" type="text" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Pilih Currency</label>
                                     <select name="currency" id="" class="form-control">
@@ -325,7 +324,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Nilai</label>
                                     <input name="value" type="text" class="form-control">
@@ -348,7 +347,7 @@
         </div>
     </div>
 
-    {{-- Modal Title 2--}}
+    {{-- Modal Title 2 --}}
     <div class="modal fade bd-add2-modal-lg small" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -359,15 +358,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{URL('users/submit/edit/cek_masuk/'.$kasmskTable->kasmsk)}}" method="post">
+                    <form
+                        action="{{URL('users/cash-in/edit/detail-2/submit/'.Crypt::encryptString($kasmskTable->kasmsk))}}"
+                        method="post">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Kas / Bank</label>
                                     <select name="cash_bank" class="form-control" value="{{old('cash_bank')}}">
-                                        <option value="BCA">BCA</option>
-                                        <option value="BRI">BRI</option>
+                                        @foreach ($kas as $item)
+                                        <option value="{{$item->kas}}">{{$item->kas}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -378,7 +380,7 @@
                                         value="{{old('giro_number')}}">
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Tanggal Pencairan</label>
                                     <input type="date" name="liquid_date" id="" class="form-control"
@@ -386,9 +388,7 @@
                                         value="{{old('liquid_date')}}">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Pilih Currency</label>
                                     <select name="currency" id="" class="form-control" value="{{old('currency')}}">
@@ -398,7 +398,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="">Nilai</label>
                                     <input name="value" type="text" class="form-control" value="{{old('value')}}">
@@ -414,7 +414,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
+                    <a type="button" class="btn btn-secondary btn-sm">Batal</a>
                     <button type="submit" class="btn btn-primary btn-sm">Tambah</button>
                 </div>
                 </form>
@@ -461,13 +461,88 @@
         });
     });
 
-    // script for delete item 
-    $(document).on('click', '.delete_first', function () {
-        let id = $(this).attr('data-id');
+    // Delete record storage kas masuk
+    $(document).on('click', '.btn-delete-1', function () {
+        let id = $(this).attr('data-id-detail-1');
         let urlPath = window.location.pathname.split("/")[3];
 
         $.ajax({
-            url: '/users/cash_in/first/delete/' + id,
+            url: '/users/cash_in/edit/kasmsk/delete/' + id,
+            type: 'DELETE',
+            datatype: 'json',
+            data: {
+                "id": id,
+                "urlPath": urlPath,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function (e) {
+                if (e.redirect_url) {
+                    window.location = e.redirect_url;
+                }
+            },
+            error: function (n) {
+                console.log(n);
+            }
+        });
+    });
+
+    // Delete record storage cek masuk
+    $(document).on('click', '.btn-delete-2', function () {
+        let id = $(this).attr('data-id-detail-2');
+        let urlPath = window.location.pathname.split("/")[3];
+
+        $.ajax({
+            url: '/users/cash_in/edit/cekmsk/delete/' + id,
+            type: 'DELETE',
+            datatype: 'json',
+            data: {
+                "id": id,
+                "urlPath": urlPath,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function (e) {
+                if (e.redirect_url) {
+                    window.location = e.redirect_url;
+                }
+            },
+            error: function (n) {
+                console.log(n);
+            }
+        });
+    });
+
+     // Delete record temporaty kas masuk
+     $(document).on('click', '.btn-delete-3', function () {
+        let id = $(this).attr('data-id-detail-3');
+        let urlPath = window.location.pathname.split("/")[3];
+
+        $.ajax({
+            url: '/users/cash_in/edit/detail-1/delete/' + id,
+            type: 'DELETE',
+            datatype: 'json',
+            data: {
+                "id": id,
+                "urlPath": urlPath,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function (e) {
+                if (e.redirect_url) {
+                    window.location = e.redirect_url;
+                }
+            },
+            error: function (n) {
+                console.log(n);
+            }
+        });
+    });
+
+     // Delete record temporaty kas masuk
+     $(document).on('click', '.btn-delete-4', function () {
+        let id = $(this).attr('data-id-detail-4');
+        let urlPath = window.location.pathname.split("/")[3];
+
+        $.ajax({
+            url: '/users/cash_in/edit/detail-2/delete/' + id,
             type: 'DELETE',
             datatype: 'json',
             data: {

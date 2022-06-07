@@ -42,16 +42,25 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::get('/info/cash_in/{id}', [KasMasukController::class, 'getDetail']);
     Route::get('/info/cash_in/first/{id}', [KasMasukController::class, 'getFirstDetail']);
     Route::get('/info/cash_in/second/{id}', [KasMasukController::class, 'getSecondDetail']);
-    Route::delete('/cash_in/delete/{id}', [KasMasukController::class, 'deleteKasMsk']);
+    Route::delete('/cash_in/delete/{id}', [KasMasukController::class, 'deleteKasMsk']); // Delete all data from kasmsk 
 
     // Page edit 
     Route::get('/info/cash_in/edit/first/{id}', [KasMasukController::class, 'getEditFirstDetail']);
     Route::get('/info/cash_in/edit/second/{id}', [KasMasukController::class, 'getEditSecondDetail']);
-    Route::delete('cash_in/first/delete/{id}', [KasMasukController::class, 'delKasMsk1']);
-    Route::post('/submit_detail_opponent/edit/{id}', [KasMasukController::class, 'push_temp_kasmsk_edit']);
+
+    // Pop up form submit 
+    Route::post('/cash-in/edit/detail-1/submit/{kasmsk}', [KasMasukController::class, 'push_temp_kasmsk_edit']);
+    Route::post('/cash-in/edit/detail-2/submit/{kasmsk}', [KasMasukController::class, 'push_temp_cekmsk_edit']);
+
+    // Delete form edit page
+    Route::delete('/cash_in/edit/kasmsk/delete/{id}', [KasMasukController::class, 'cash_in_delete_kasmsk1']); //soft delete
+    Route::delete('/cash_in/edit/cekmsk/delete/{id}', [KasMasukController::class, 'cash_in_delete_cekmsk']); //soft delete
+
+    Route::delete('/cash_in/edit/detail-1/delete/{id}', [KasMasukController::class, 'cash_in_delete_detail_1']);
+    Route::delete('/cash_in/edit/detail-2/delete/{id}', [KasMasukController::class, 'cash_in_delete_detail_2']);
+
     Route::get('/edit/get_temp_edit_kasmsk/', [KasMasukController::class, 'get_temp_edit_kasmsk']);
     Route::get('/edit/get_temp_edit_cekmsk/', [KasMasukController::class, 'get_temp_edit_cekmsk']);
-    Route::post('/submit/edit/cek_masuk/{id}', [KasMasukController::class, 'push_temp_cekmsk_edit']);
     Route::put('/general_edit_cash_in/{id}/{kasmsk}', [KasMasukController::class, 'general_edit_cash_in']);
 });
 
