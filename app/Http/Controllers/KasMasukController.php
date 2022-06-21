@@ -20,6 +20,7 @@ use App\Models\TemporaryEditCekMasuk;
 use Yajra\DataTables\DataTables;
 use Auth;
 use DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class KasMasukController extends Controller
 {
@@ -83,9 +84,68 @@ class KasMasukController extends Controller
      */
     public function show($id)
     {
-        $descryptID = Crypt::decryptString($id);
+        $decrypt_id = Crypt::decryptString($id);
 
-        $kasmskTable = Kasmsk::where('kasmsk', $descryptID)->first();
+        $kasmsk1 = Kasmsk1::where('kasmsk', $decrypt_id)->get();
+
+        $cekmsk = Cekmsk::where('kasmsk', $decrypt_id)->get();
+
+        // Check data from table temporary edit kas masuk 
+        $temp_not_null_kasmsk = TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->first();
+
+        $temp_not_null_cekmsk = TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->first();
+
+        // Delete old data temp with id_user
+        if ($temp_not_null_kasmsk and $temp_not_null_cekmsk) {
+            TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->delete();
+            TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->delete();
+        } // apabila error maka buat menggunakan multi condition
+
+        // Checking again after delete
+        $temp_try_check_again_kasmsk = TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->first();
+
+        $temp_try_check_again_cekmsk = TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->first();
+
+        if (!$temp_try_check_again_kasmsk) {
+            foreach ($kasmsk1 as $key => $item) {
+                // Find oppenent name same with data from table kasmsk1s 
+                $oppenent_item = Oppenent::select('id', 'table_name')
+                    ->where('oppenent_name', $kasmsk1[$key]->gollawan)->get();
+
+                // Get nama from table acc, cus, kas and sup 
+                $oppenent_name = DB::table($oppenent_item[0]->table_name)->select('nama')->get();
+
+                TemporaryEditKasMasuk::create([
+                    'id_users'      => Auth::user()->id,
+                    'kasmsk'        => $item->kasmsk,
+                    'id_opponent'   => $oppenent_item[0]->id,
+                    'table_name'    => $oppenent_item[0]->table_name,
+                    'name_opponent' => $oppenent_name[0]->nama,
+                    'no_ref'        => $kasmsk1[$key]->ref,
+                    'currency'      => $item->cur,
+                    'value'         => $item->nil,
+                    'description'   => $item->ket,
+                ]);
+            }
+        }
+
+        if (!$temp_try_check_again_cekmsk) {
+            foreach ($cekmsk as $key => $item) {
+
+                TemporaryEditCekMasuk::create([
+                    'id_users'      => Auth::user()->id,
+                    'kasmsk'        => $item->kasmsk,
+                    'cash_bank'     => $item->kas,
+                    'giro_number'   => $item->giro,
+                    'liquid_date'   => $item->tglcair,
+                    'currency'      => $item->cur,
+                    'value'         => $item->nil,
+                    'description'   => $item->ket,
+                ]);
+            }
+        }
+
+        $kasmskTable = Kasmsk::where('kasmsk', $decrypt_id)->first();
 
         $oppenents = Oppenent::all();
 
@@ -221,7 +281,7 @@ class KasMasukController extends Controller
      */
     public function getKasMasuk()
     {
-        return Datatables::of(TemporaryStorageKasMasuk::all())
+        return Datatables::of(TemporaryStorageKasMasuk::where('id_users', Auth::user()->id))
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
@@ -241,6 +301,19 @@ class KasMasukController extends Controller
      */
     public function postCekMasuk(Request $request)
     {
+        // request()->validate(
+        //     [
+        //         'giro_number'     => 'required|min:5|max:20',
+        //         'accepted'      => 'required|max:50|min:3',
+        //         'description'   => 'required|max:255|min:5',
+        //     ],
+        //     [
+        //         'giro_number.required'     => 'Pastikan mengisi data tanggal',
+        //         'accepted.required'      => 'Data penerima masih kosong',
+        //         'description.required'   => 'Keterangan harus terisi',
+        //     ]
+        // );
+
         try {
             TemporaryStorageCekMasuk::create([
                 'id_users'      => Auth::user()->id,
@@ -268,7 +341,7 @@ class KasMasukController extends Controller
      */
     public function getCekMasuk()
     {
-        return Datatables::of(TemporaryStorageCekMasuk::all())
+        return Datatables::of(TemporaryStorageCekMasuk::where('id_users', Auth::user()->id))
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
@@ -305,14 +378,12 @@ class KasMasukController extends Controller
         $kasmskUnique = Helper::generateKasMsk();
         $numberEvidence = Helper::generateId();
 
+        $temporaryKasMasuk = TemporaryStorageKasMasuk::where('id_users', Auth::user()->id)->get();
+        $temporaryCekMasuk = TemporaryStorageCekMasuk::where('id_users', Auth::user()->id)->get();
+
         try {
-
-            $temporaryKasMasuk = TemporaryStorageKasMasuk::where('id_users', Auth::user()->id)->get();
-            $temporaryCekMasuk = TemporaryStorageCekMasuk::where('id_users', Auth::user()->id)->get();
-
             if (!$temporaryKasMasuk || !$temporaryCekMasuk) {
 
-                // save data to table kasmsk
                 Kasmsk::create([
                     'kasmsk'        => $kasmskUnique,
                     'tgl'           => $request->dateToday,
@@ -368,8 +439,6 @@ class KasMasukController extends Controller
                 return redirect('/users/add_cash_in')->with('status', 'Pastikan semua data telah terisi sesuai dengan permintaan, kesalahan karena data kosong !');
             }
         } catch (\Throwable $th) {
-            //throw $th;
-
             return $th->getMessage();
         }
     }
@@ -434,14 +503,19 @@ class KasMasukController extends Controller
      * @param  \App\Models\Kasmsk1
      * @return \Illuminate\Http\Response
      */
-    public function getEditFirstDetail($id)
+    public function get_temporary_edit_kas_masuks($id)
     {
-        $kasmskID = Crypt::decryptString($id);
+        $decrypt_id = Crypt::decryptString($id);
 
-        return Datatables::of(Kasmsk1::where('kasmsk', $kasmskID))
-            ->addIndexColumn()
+        $x = TemporaryEditKasMasuk::where('kasmsk', $decrypt_id)->get();
+
+        return Datatables::of(TemporaryEditKasMasuk::where('kasmsk', $decrypt_id))
+            ->addColumn('oppenents', function ($TemporaryEditKasMasuk) {
+                return $TemporaryEditKasMasuk->oppenent->oppenent_name;
+            })
             ->addColumn('action', function ($row) {
-                $btn = "<a class='btn-delete-1 btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id-detail-1='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash text-white-50'></i></a>";
+                $btn = "<a href='' class='btn btn-primary btn-sm m-1'><i class='fas fa-pen'></i></a>";
+                $btn = $btn . "<a class='btn-delete-1 btn btn-danger btn-sm m-1' name='" . $row->id . "' data-id-detail-1='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash text-white-50'></i></a>";
                 // button kas masuk
                 return $btn;
             })

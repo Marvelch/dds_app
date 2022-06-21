@@ -15,6 +15,11 @@ class TemporaryEditKasMasuk extends Model
         'id'
     ];
 
+    public function oppenent()
+    {
+        return $this->belongsTo(oppenent::class, 'id_opponent');
+    }
+
     // protected $fillable = [
     //     'id',
     //     'id_users',

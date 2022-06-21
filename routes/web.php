@@ -45,7 +45,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::delete('/cash_in/delete/{id}', [KasMasukController::class, 'deleteKasMsk']); // Delete all data from kasmsk 
 
     // Page edit 
-    Route::get('/info/cash_in/edit/first/{id}', [KasMasukController::class, 'getEditFirstDetail']);
+    Route::get('/info/get-temporary-kas-masuk/{id}', [KasMasukController::class, 'get_temporary_edit_kas_masuks']);
     Route::get('/info/cash_in/edit/second/{id}', [KasMasukController::class, 'getEditSecondDetail']);
 
     // Pop up form submit 
@@ -59,8 +59,9 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
     Route::delete('/cash_in/edit/detail-1/delete/{id}', [KasMasukController::class, 'cash_in_delete_detail_1']);
     Route::delete('/cash_in/edit/detail-2/delete/{id}', [KasMasukController::class, 'cash_in_delete_detail_2']);
 
-    Route::get('/edit/get_temp_edit_kasmsk/', [KasMasukController::class, 'get_temp_edit_kasmsk']);
-    Route::get('/edit/get_temp_edit_cekmsk/', [KasMasukController::class, 'get_temp_edit_cekmsk']);
+    // Datatable get edit page
+    // Route::get('/edit/get_temp_edit_kasmsk/', [KasMasukController::class, 'get_temp_edit_kasmsk']); Matikan karena ganti fitur
+    // Route::get('/edit/get_temp_edit_cekmsk/', [KasMasukController::class, 'get_temp_edit_cekmsk']); Matikan karena ganti fitur
     Route::put('/general_edit_cash_in/{id}/{kasmsk}', [KasMasukController::class, 'general_edit_cash_in']);
 });
 

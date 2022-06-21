@@ -71,7 +71,7 @@
                     <div class="card-body">
                         <div id="example_wrapper" class="dataTables_wrapper">
                             <div class="pb-4">
-                                <table id="example" class="display dataTable" style="width:100%"
+                                <table id="example_kasmsk" class="display dataTable" style="width:100%"
                                     aria-describedby="example_info">
                                     <thead>
                                         <tr>
@@ -81,33 +81,28 @@
                                                 Kas Masuk
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Position: activate to sort column ascending">
-                                                Baris</th>
+                                                colspan="1" aria-label="Office: activate to sort column ascending">
+                                                asdas
+                                            </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Office: activate to sort column ascending"
-                                                style="width: 96.7396px;">
+                                                colspan="1" aria-label="Office: activate to sort column ascending">
                                                 Gol Lawan
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Extn.: activate to sort column ascending"
-                                                style="width: 87.0729px;">
+                                                colspan="1" aria-label="Extn.: activate to sort column ascending">
                                                 Lawan</th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Start date: activate to sort column ascending"
-                                                style="width: 141px;">
-                                                Ref</th>
+                                                colspan="1" aria-label="Start date: activate to sort column ascending">
+                                                No Ref</th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Start date: activate to sort column ascending"
-                                                style="width: 141px;">
+                                                colspan="1" aria-label="Start date: activate to sort column ascending">
                                                 Mata Uang</th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Start date: activate to sort column ascending"
-                                                style="width: 141px;">
+                                                colspan="1" aria-label="Start date: activate to sort column ascending">
                                                 Nilai
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Start date: activate to sort column ascending"
-                                                style="width: 141px;">
+                                                colspan="1" aria-label="Start date: activate to sort column ascending">
                                                 Keterangan
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
@@ -123,10 +118,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="font-italic p-1 small">
+                            {{-- <div class="font-italic p-1 small">
                                 <span>Pembaharuan Data Tersedia Dibawah :</span>
-                            </div>
-                            <div class="shadow">
+                            </div> --}}
+                            {{-- <div class="shadow">
                                 <table id="example_kasmsk" class="display dataTable" style="width:100%"
                                     aria-describedby="example_info">
                                     <thead>
@@ -154,7 +149,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -566,7 +561,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        $('#example').DataTable({
+        $('#example_kasmsk').DataTable({
             "searching": false,
             "lengthChange": false,
             paging: false,
@@ -574,30 +569,30 @@
             info: false,
             processing: true,
             serverSide: true,
-            ajax: "{{ url('/users/info/cash_in/edit/first', [Request::segment(3)]) }}",
+            ajax: "{{ url('/users/info/get-temporary-kas-masuk', [Request::segment(3)]) }}",
             columns: [{
                     data: 'kasmsk',
                 },
                 {
-                    data: 'baris',
+                    data: 'table_name',
                 },
                 {
-                    data: 'gollawan',
+                    data: 'oppenents',
                 },
                 {
-                    data: 'lawan',
+                    data: 'name_opponent',
                 },
                 {
-                    data: 'ref'
+                    data: 'no_ref',
                 },
                 {
-                    data: 'cur'
+                    data: 'currency'
                 },
                 {
-                    data: 'nil', render: $.fn.dataTable.render.number( ',', '.', 2, ) 
+                    data: 'value', render: $.fn.dataTable.render.number( ',', '.', 2, )
                 },
                 {
-                    data: 'ket'
+                    data: 'description' 
                 },
                 {
                     data: 'action',
@@ -663,47 +658,47 @@
             }
         });
 
-        $('#example_kasmsk').DataTable({
-            searching: false,
-            lengthChange: false,
-            paging: false,
-            ordering: false,
-            info: false,
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/users/edit/get_temp_edit_kasmsk/')}}",
-            columns: [{
-                    data: 'table_name',
-                },
-                {
-                    data: 'name_opponent',
-                },
-                {
-                    data: 'no_ref',
-                },
-                {
-                    data: 'currency',
-                },
-                {
-                    data: 'value',
-                },
-                {
-                    data: 'description',
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-            ],
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Pencarian",
-                "zeroRecords": "Data Kosong !",
-                "info": "Tampilkan _PAGE_ dari _PAGES_"
-            }
-        });
+        // $('#example_kasmsk').DataTable({
+        //     searching: false,
+        //     lengthChange: false,
+        //     paging: false,
+        //     ordering: false,
+        //     info: false,
+        //     processing: true,
+        //     serverSide: true,
+        //     ajax: "{{ url('/users/edit/get_temp_edit_kasmsk/')}}",
+        //     columns: [{
+        //             data: 'table_name',
+        //         },
+        //         {
+        //             data: 'name_opponent',
+        //         },
+        //         {
+        //             data: 'no_ref',
+        //         },
+        //         {
+        //             data: 'currency',
+        //         },
+        //         {
+        //             data: 'value',
+        //         },
+        //         {
+        //             data: 'description',
+        //         },
+        //         {
+        //             data: 'action',
+        //             name: 'action',
+        //             orderable: false,
+        //             searchable: false
+        //         },
+        //     ],
+        //     language: {
+        //         search: "_INPUT_",
+        //         searchPlaceholder: "Pencarian",
+        //         "zeroRecords": "Data Kosong !",
+        //         "info": "Tampilkan _PAGE_ dari _PAGES_"
+        //     }
+        // });
 
         $('#example_cekmsk').DataTable({
             searching: false,

@@ -10,4 +10,8 @@ class oppenent extends Model
     use HasFactory;
 
     protected $table = 'oppenents';
+
+    protected $guarded = [
+        'id'
+    ];
 }
