@@ -46,7 +46,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth'], function () {
 
     // Page edit 
     Route::get('/info/get-temporary-kas-masuk/{id}', [KasMasukController::class, 'get_temporary_edit_kas_masuks']);
-    Route::get('/info/cash_in/edit/second/{id}', [KasMasukController::class, 'getEditSecondDetail']);
+    Route::get('/info/get-temporary-cek-masuk/{id}', [KasMasukController::class, 'get_temporary_edit_cek_masuks']);
+
+    Route::get('/info/get-data/kas-msk/', [KasMasukController::class, 'get_detail_one_record_kas_masuk']);
+    Route::get('/info/get-opponents-edit/{id}',  [KasMasukController::class, 'get_opponent_edit']);
+    Route::post('/cash-in/edit/temp/one-field/{id}', [KasMasukController::class, 'save_temp_edit_kasmsk']);
 
     // Pop up form submit 
     Route::post('/cash-in/edit/detail-1/submit/{kasmsk}', [KasMasukController::class, 'push_temp_kasmsk_edit']);

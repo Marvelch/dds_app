@@ -82,10 +82,6 @@
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                 colspan="1" aria-label="Office: activate to sort column ascending">
-                                                asdas
-                                            </th>
-                                            <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Office: activate to sort column ascending">
                                                 Gol Lawan
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
@@ -118,38 +114,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {{-- <div class="font-italic p-1 small">
-                                <span>Pembaharuan Data Tersedia Dibawah :</span>
-                            </div> --}}
-                            {{-- <div class="shadow">
-                                <table id="example_kasmsk" class="display dataTable" style="width:100%"
-                                    aria-describedby="example_info">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="odd">
-                                            <td valign="top" colspan="6" class="dataTables_empty">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -181,15 +145,11 @@
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                 colspan="1" aria-label="Position: activate to sort column ascending"
                                                 style="width: autopx;">
-                                                Baris</th>
-                                            <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                colspan="1" aria-label="Position: activate to sort column ascending"
-                                                style="width: autopx;">
                                                 Kas / Bank</th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                 colspan="1" aria-label="Office: activate to sort column ascending"
                                                 style="width: auto;">
-                                                Giro
+                                                No Giro
                                             </th>
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                 colspan="1" aria-label="Start date: activate to sort column ascending"
@@ -212,37 +172,6 @@
                                             <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
                                                 colspan="1" aria-label="Start date: activate to sort column ascending">
 
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="odd">
-                                            <td valign="top" colspan="6" class="dataTables_empty">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="font-italic p-1 small">
-                                <span>Pembaharuan Data Tersedia Dibawah :</span>
-                            </div>
-                            <div class="shadow">
-                                <table id="example_cekmsk" class="display dataTable" style="width:100%"
-                                    aria-describedby="example_info">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
-                                            </th>
-                                            <th>
                                             </th>
                                         </tr>
                                     </thead>
@@ -288,7 +217,7 @@
                                     <label for="">Pilih Lawan</label>
                                     <select name="opponent" id="opponent" class="form-control">
                                         @foreach ($oppenents as $item)
-                                        <option value="{{$item->oppenent_name}}" selected>{{$item->oppenent_name}}
+                                        <option value="{{$item->id}}" selected>{{$item->oppenent_name}}
                                         </option>
                                         @endforeach
                                     </select>
@@ -418,10 +347,112 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="confirmation modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title text-danger" id="exampleModalLabel">Perubahaan Data</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Kas / Bank</label>
+                            <input type="hidden" name="" id="readonly_id" readonly>
+                            <select name="opponents" id="opponents" class="form-control">
+                                @foreach ($oppenents as $item)
+                                <option value="{{$item->id}}">{{$item->oppenent_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Pilih Lawan</label>
+                            <select name="sub_oppenent" id="sub_oppenent" class="form-control">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">No Giro</label>
+                            <input type="text" class="form-control" id="no_giro">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Mata Uang</label>
+                            <select name="currency" id="currency" class="form-control">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Nilai</label>
+                            <input type="text" class="form-control" id="value">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Keterangan</label>
+                            <input type="text" class="form-control" id="description">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary" onclick="saveOpponent()">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scriptjs')
 
 <script>
+    function saveOpponent() {
+            let id = $('#readonly_id').val();
+            let opponents = $('select[name=opponents] option').filter(':selected').val();
+            let sub_oppenent = $('select[name=sub_oppenent] option').filter(':selected').val();
+            let no_giro = $('#no_giro').val();
+            let currency = $('#currency').val();
+            let value = $('#value').val();
+            let description = $('#description').val();
+
+            $.ajax({
+                url: '/users/cash-in/edit/temp/one-field/'+ id,
+                type: 'POST',
+                datatype: 'json',
+                data: {
+                    'id': id,
+                    'opponents' : opponents,
+                    'sub_oppenent' : sub_oppenent,
+                    'no_giro' : no_giro,
+                    'currency' : currency,
+                    'value' : value,
+                    'description' : description,
+                    '_token': '{{ csrf_token() }}',
+                }, 
+                success: function(res) {
+                    window.location = res.redirect_url;
+                },
+                error: function(res) {
+                    alert('Error Hubungi Developer');
+                }
+            })
+        }
+
     $('document').ready(function () {
+
+        // Load data from database
         $('#opponent').on('change', function () {
             let valOpponent = $('#opponent').val();
 
@@ -450,10 +481,66 @@
             });
         });
 
-        $('#push_opponent').on('change', function () {
-            let valpush_opponent = $('#push_opponent option:selected').text();
-            $('#push_opponent_hidden').val(valpush_opponent);
+        // opponents change select option 
+        $('#opponents').on('change',function() {
+            let x = $(this).val();
+            
+            $.ajax({
+                    url: '/users/info/get-opponents-edit/' + x,
+                    type: 'get',
+                    datatype: 'json',
+                    success: function (e) {
+                        console.log(e);
+                        if (e) {
+                            $('#sub_oppenent').empty();
+                            $('#sub_oppenent').append('<option hidden></option>');
+                            $.each(e, function (key, items) {
+                                $('select[name="sub_oppenent"]').append(
+                                    '<option value="' +
+                                    items.id + '">' + items.nama + '</option>');
+                            });
+                        } else {
+                            $('#sub_oppenent').empty();
+                        }
+                    },
+                    error: function () {
+                        $('#sub_oppenent').empty();
+                        $('#sub_oppenent').append('<option hidden>Kosong !</option>');
+                    }
+                });
         });
+
+    });
+
+    // Popup confirmation modal 
+    $(document).on('click','.confirm-edit-kasmsk', function() {
+        let id = $(this).attr('let-confirmation-kasmsk');
+        
+        $.ajax({
+            url: '/users/info/get-data/kas-msk',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+                'id': id,
+                '_token': '{{ csrf_token() }}',
+            },
+            success: function(e) {
+                $('.confirmation').modal('toggle');
+                $('.confirmation', function() {
+                    $('#readonly_id').val(e['id']);
+                    $('#no_giro').val(e['no_ref']);
+                    $('#currency').append( '<option selected value="'+e['currency']+'">'+e['currency']+'</option>' );
+                    $('#sub_oppenent').append( '<option selected value="'+e.oppenent.id+'">'+e['name_opponent']+'</option>' );
+                    $('#value').val(e['value']);
+                    $('#description').val(e['description']);
+                    $('#option-selected').remove();
+                    $('#opponents').append( '<option id="option-selected" selected value="'+e.oppenent.id+'" class="font-weight-bold">'+e.oppenent.oppenent_name+'</option>' );
+                });
+            },
+            error: function(e){
+                console.log(e);
+            }
+        })
     });
 
     // Delete record storage kas masuk
@@ -506,56 +593,6 @@
         });
     });
 
-     // Delete record temporaty kas masuk
-     $(document).on('click', '.btn-delete-3', function () {
-        let id = $(this).attr('data-id-detail-3');
-        let urlPath = window.location.pathname.split("/")[3];
-
-        $.ajax({
-            url: '/users/cash_in/edit/detail-1/delete/' + id,
-            type: 'DELETE',
-            datatype: 'json',
-            data: {
-                "id": id,
-                "urlPath": urlPath,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function (e) {
-                if (e.redirect_url) {
-                    window.location = e.redirect_url;
-                }
-            },
-            error: function (n) {
-                console.log(n);
-            }
-        });
-    });
-
-     // Delete record temporaty kas masuk
-     $(document).on('click', '.btn-delete-4', function () {
-        let id = $(this).attr('data-id-detail-4');
-        let urlPath = window.location.pathname.split("/")[3];
-
-        $.ajax({
-            url: '/users/cash_in/edit/detail-2/delete/' + id,
-            type: 'DELETE',
-            datatype: 'json',
-            data: {
-                "id": id,
-                "urlPath": urlPath,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function (e) {
-                if (e.redirect_url) {
-                    window.location = e.redirect_url;
-                }
-            },
-            error: function (n) {
-                console.log(n);
-            }
-        });
-    });
-
 </script>
 @endpush
 
@@ -572,9 +609,6 @@
             ajax: "{{ url('/users/info/get-temporary-kas-masuk', [Request::segment(3)]) }}",
             columns: [{
                     data: 'kasmsk',
-                },
-                {
-                    data: 'table_name',
                 },
                 {
                     data: 'oppenents',
@@ -618,18 +652,15 @@
             info: false,
             processing: true,
             serverSide: true,
-            ajax: "{{ url('/users/info/cash_in/edit/second', [Request::segment(3)]) }}",
+            ajax: "{{ url('/users/info/get-temporary-cek-masuk', [Request::segment(3)]) }}",
             columns: [{
                     data: 'kasmsk',
-                },
-                {
-                    data: 'baris',
                 },
                 {
                     data: 'kas',
                 },
                 {
-                    data: 'giro'
+                    data: 'giro',
                 },
                 {
                     data: 'tglcair'
@@ -649,88 +680,6 @@
                     orderable: false,
                     searchable: false
                 },
-            ],
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Pencarian",
-                "zeroRecords": "Data Kosong !",
-                "info": "Tampilkan _PAGE_ dari _PAGES_"
-            }
-        });
-
-        // $('#example_kasmsk').DataTable({
-        //     searching: false,
-        //     lengthChange: false,
-        //     paging: false,
-        //     ordering: false,
-        //     info: false,
-        //     processing: true,
-        //     serverSide: true,
-        //     ajax: "{{ url('/users/edit/get_temp_edit_kasmsk/')}}",
-        //     columns: [{
-        //             data: 'table_name',
-        //         },
-        //         {
-        //             data: 'name_opponent',
-        //         },
-        //         {
-        //             data: 'no_ref',
-        //         },
-        //         {
-        //             data: 'currency',
-        //         },
-        //         {
-        //             data: 'value',
-        //         },
-        //         {
-        //             data: 'description',
-        //         },
-        //         {
-        //             data: 'action',
-        //             name: 'action',
-        //             orderable: false,
-        //             searchable: false
-        //         },
-        //     ],
-        //     language: {
-        //         search: "_INPUT_",
-        //         searchPlaceholder: "Pencarian",
-        //         "zeroRecords": "Data Kosong !",
-        //         "info": "Tampilkan _PAGE_ dari _PAGES_"
-        //     }
-        // });
-
-        $('#example_cekmsk').DataTable({
-            searching: false,
-            lengthChange: false,
-            paging: false,
-            ordering: false,
-            info: false,
-            processing: true,
-            serverSide: true,
-            ajax: "{{ url('/users/edit/get_temp_edit_cekmsk/')}}",
-            columns: [
-                {
-                    data: 'cash_bank',
-                },
-                {
-                    data: 'liquid_date',
-                },
-                {
-                    data: 'currency',
-                },
-                {
-                    data: 'value',
-                },
-                {
-                    data: 'description',
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }
             ],
             language: {
                 search: "_INPUT_",

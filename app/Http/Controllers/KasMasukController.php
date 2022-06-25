@@ -97,9 +97,18 @@ class KasMasukController extends Controller
 
         // Delete old data temp with id_user
         if ($temp_not_null_kasmsk and $temp_not_null_cekmsk) {
-            TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->delete();
-            TemporaryEditCekMasuk::where('id_users', Auth::user()->id)->delete();
+            TemporaryEditKasMasuk::where('id_users', Auth::user()->id)
+                ->where('kasmsk', '!=', $decrypt_id)->delete();
+            TemporaryEditCekMasuk::where('id_users', Auth::user()->id)
+                ->where('kasmsk', '!=', $decrypt_id)->delete();
         } // apabila error maka buat menggunakan multi condition
+
+        // Check data in temporary table if null data reset auto increment
+        $reset_auto_increment = TemporaryEditKasMasuk::all()->count();
+
+        if ($reset_auto_increment == 0) {
+            DB::update("ALTER TABLE temporary_edit_kas_masuks AUTO_INCREMENT = 1;");
+        }
 
         // Checking again after delete
         $temp_try_check_again_kasmsk = TemporaryEditKasMasuk::where('id_users', Auth::user()->id)->first();
@@ -203,7 +212,6 @@ class KasMasukController extends Controller
         return view('kasmasuk.add', compact('uniqueCode', 'oppenents', 'cash'));
     }
 
-
     /**
      * Call data for table kasmsk
      *
@@ -243,6 +251,40 @@ class KasMasukController extends Controller
         }
 
         return response()->json($items);
+    }
+
+    public function get_opponent_edit($id)
+    {
+        $items = Oppenent::find($id);
+
+        return DB::table($items->table_name)->get();
+    }
+
+    public function save_temp_edit_kasmsk(Request $request, $id)
+    {
+        try {
+            $let = [$request->opponents, $request->sub_oppenent, $request->no_giro, $request->currency, $request->value, $request->description];
+
+            $opponent_items = Oppenent::where('id', $request->opponents)->first();
+
+            $custome_select_table = DB::table($opponent_items->table_name)->where('id', $request->sub_oppenent)->first();
+
+            TemporaryEditKasMasuk::where('id', $request->id)
+                ->update([
+                    'id_opponent'   => $request->opponents,
+                    'table_name'    => $opponent_items->table_name,
+                    'name_opponent' => $custome_select_table->nama,
+                    'no_ref'        => $request->no_giro,
+                    'currency'      => $request->currency,
+                    'value'         => $request->value,
+                    'description'   => $request->description,
+                ]);
+
+            return response()->json(['status' => true, "redirect_url" => url('/users/cash_list')]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
     }
 
     /**
@@ -507,20 +549,27 @@ class KasMasukController extends Controller
     {
         $decrypt_id = Crypt::decryptString($id);
 
-        $x = TemporaryEditKasMasuk::where('kasmsk', $decrypt_id)->get();
-
         return Datatables::of(TemporaryEditKasMasuk::where('kasmsk', $decrypt_id))
+            ->editColumn('name_opponent', function ($TemporaryEditKasMasuk) {
+                return ucwords(strtolower($TemporaryEditKasMasuk->name_opponent));
+            })
             ->addColumn('oppenents', function ($TemporaryEditKasMasuk) {
                 return $TemporaryEditKasMasuk->oppenent->oppenent_name;
             })
             ->addColumn('action', function ($row) {
-                $btn = "<a href='' class='btn btn-primary btn-sm m-1'><i class='fas fa-pen'></i></a>";
-                $btn = $btn . "<a class='btn-delete-1 btn btn-danger btn-sm m-1' name='" . $row->id . "' data-id-detail-1='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash text-white-50'></i></a>";
+                $btn = "<a class='confirm-edit-kasmsk btn btn-primary btn-sm m-1' name='" . $row->id . "' let-confirmation-kasmsk='" . $row->id . "'><i class='fas fa-pen'></i></a>";
+                $btn = $btn . "<a class='btn btn-danger btn-sm m-1' name='" . $row->id . "' data-id-detail-1='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
                 // button kas masuk
                 return $btn;
             })
             ->rawColumns(['action'])
             ->make(true);
+    }
+
+    public function get_detail_one_record_kas_masuk(Request $request)
+    {
+        $temp = TemporaryEditKasMasuk::with('oppenent')->find($request->id);
+        return $temp;
     }
 
     /**
@@ -529,14 +578,17 @@ class KasMasukController extends Controller
      * @param  \App\Models\Cekmsk
      * @return \Illuminate\Http\Response
      */
-    public function getEditSecondDetail($id)
+    public function get_temporary_edit_cek_masuks($id)
     {
-        $kasmskID = Crypt::decryptString($id);
+        $decrypt_id = Crypt::decryptString($id);
 
-        return Datatables::of(Cekmsk::where('kasmsk', $kasmskID))
-            ->addIndexColumn()
+        return Datatables::of(Cekmsk::where('kasmsk', $decrypt_id))
+            ->editColumn('giro', function ($TemporaryEditCekMasuk) {
+                return strtoupper($TemporaryEditCekMasuk->giro);
+            })
             ->addColumn('action', function ($row) {
-                $btn = "<a class='btn-delete-2 btn btn-danger btn-sm ml-1' name='" . $row->id . "' data-id-detail-2='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash text-white-50'></i></a>";
+                $btn = "<a class='confirm-edit btn btn-primary btn-sm m-1' name='" . $row->id . "' let_confirmation='" . $row->id . "'><i class='fas fa-pen'></i></a>";
+                $btn = $btn . "<a class='btn-delete-1 btn btn-danger btn-sm m-1' name='" . $row->id . "' data-id-detail-1='" . $row->id . "' data-toggle='modal' data-target='#exampleModal'><i class='fas fa-trash'></i></a>";
                 // button cek masuk
                 return $btn;
             })

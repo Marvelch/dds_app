@@ -19,16 +19,4 @@ class TemporaryEditKasMasuk extends Model
     {
         return $this->belongsTo(oppenent::class, 'id_opponent');
     }
-
-    // protected $fillable = [
-    //     'id',
-    //     'id_users',
-    //     'id_opponent',
-    //     'table_name',
-    //     'name_opponent',
-    //     'no_ref',
-    //     'currency',
-    //     'value',
-    //     'description',
-    // ];
 }
